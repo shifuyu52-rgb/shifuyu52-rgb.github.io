@@ -7,7 +7,7 @@
 <style>
   :root{
     --bg:#050508;
-    --panel:rgba(10,10,18,.85);
+    --panel:rgba(10,10,18,.88);
     --neon:#00ff9c;
     --neon2:#00d4ff;
     --neon3:#ff2a6d;
@@ -45,6 +45,14 @@
     position:fixed;inset:0;z-index:2;pointer-events:none;
     background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.7) 100%);
   }
+
+  /* 科技感光标 */
+  .cursor-dot,.cursor-ring{
+    position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
+    border-radius:50%;will-change:transform;
+  }
+  .cursor-dot{width:6px;height:6px;background:var(--neon);box-shadow:0 0 12px var(--neon)}
+  .cursor-ring{width:28px;height:28px;border:1px solid rgba(0,255,156,.5);box-shadow:0 0 14px rgba(0,255,156,.25)}
 
   /* 导航 */
   nav{
@@ -132,20 +140,33 @@
   @keyframes cursorBlink{50%{border-color:transparent}}
 
   /* About */
-  .about-grid{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;
-  }
+  .about-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px}
   .panel{
     background:var(--panel);border:1px solid rgba(0,255,156,.15);padding:24px;
     position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;
+  }
+  .holo-border{
+    border:1px solid rgba(0,255,156,.18);
+    border-top-color: rgba(0,212,255,.6);
+    border-bottom-color: rgba(255,42,109,.5);
+    background: linear-gradient(180deg,rgba(0,255,156,.04),rgba(255,42,109,.04));
   }
   .panel:hover{transform:translateY(-4px);box-shadow:0 0 30px rgba(0,255,156,.12)}
   .panel::before{
     content:"";position:absolute;top:0;left:0;width:100%;height:2px;
     background:linear-gradient(90deg,var(--neon),var(--neon2),var(--neon3));
   }
+  .panel::after, .skill-card::after{
+    content:"";position:absolute;right:10px;top:10px;
+    width:8px;height:8px;border-radius:50%;box-shadow:0 0 8px var(--neon3);
+    background:var(--neon3);animation:dotPulse 1.5s ease-in-out infinite;
+  }
   .panel h3{color:#fff;margin-bottom:10px;font-size:1.05rem}
   .panel p{color:var(--dim);font-size:.92rem}
+
+  /* 解码动画 */
+  .decode{opacity:0;transform:translateY(14px);transition:opacity .7s,transform .7s cubic-bezier(.16,1,.3,1)}
+  .decode.show{opacity:1;transform:none}
 
   /* Skills */
   .skill-card{
@@ -153,23 +174,27 @@
     display:flex;flex-direction:column;gap:10px;transition:transform .3s,box-shadow .3s;
   }
   .skill-card:hover{transform:translateY(-3px);box-shadow:0 0 28px rgba(0,255,156,.12)}
-  .skill-header{display:flex;justify-content:space-between;font-size:.85rem}
+  .skill-header{display:flex;justify-content:space-between;font-size:.85rem;position:relative;z-index:1}
   .skill-name{color:#fff}
   .skill-meta{color:var(--neon)}
   .progress-track{
-    width:100%;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;position:relative;
+    width:100%;height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;position:relative;z-index:1;
   }
   .progress-fill{
-    height:100%;width:0;border-radius:4px;
+    height:100%;width:0;border-radius:4px;position:relative;overflow:hidden;
     background:linear-gradient(90deg,var(--neon),var(--neon2));
-    box-shadow:0 0 14px rgba(0,255,156,.5);transition:width 1.2s cubic-bezier(.16,1,.3,1);
+    box-shadow:0 0 14px rgba(0,255,156,.5);transition:width 1.4s cubic-bezier(.16,1,.3,1);
   }
+  .progress-fill::after{
+    content:'';position:absolute;inset:0;
+    background:repeating-linear-gradient(-45deg,transparent 0 4px,rgba(0,255,156,.18) 4px 8px);
+    animation:scanScan 1.6s linear infinite;
+  }
+  @keyframes scanScan{0%{opacity:.3}50%{opacity:1}100%{opacity:.3}}
   .skills-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
 
   /* Portfolio */
-  .portfolio-grid{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px;
-  }
+  .portfolio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
   .project-card{
     background:var(--panel);border:1px dashed rgba(0,255,156,.25);padding:28px;text-align:center;
     transition:border-color .3s,box-shadow .3s;
@@ -188,9 +213,17 @@
   .contact-link{
     display:inline-flex;align-items:center;gap:10px;padding:12px 18px;margin:6px 8px 6px 0;
     border:1px solid rgba(0,255,156,.3);color:var(--text);text-decoration:none;font-size:.9rem;
-    transition:all .3s;
+    transition:all .3s;position:relative;
   }
-  .contact-link:hover{background:rgba(0,255,156,.08);color:var(--neon);border-color:var(--neon);box-shadow:0 0 22px rgba(0,255,156,.15)}
+  .contact-link::before{
+    content:'';position:absolute;left:-1px;top:50%;width:3px;height:0;background:var(--neon);
+    box-shadow:0 0 10px var(--neon);transform:translateY(-50%);transition:height .3s;
+  }
+  .contact-link:hover{
+    background:rgba(0,255,156,.08);color:var(--neon);border-color:var(--neon);
+    box-shadow:0 0 22px rgba(0,255,156,.15);
+  }
+  .contact-link:hover::before{height:60%}
 
   /* Footer */
   footer{
@@ -202,6 +235,7 @@
   @media (max-width:768px){
     .nav-links{gap:14px}
     section{padding:100px 6vw 60px}
+    .cursor-dot,.cursor-ring{display:none !important}
   }
 
   /* 动画可用性 */
@@ -211,6 +245,10 @@
 </style>
 </head>
 <body>
+
+<!-- 科技感光标 -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
 <!-- 背景层 -->
 <canvas id="matrix"></canvas>
@@ -239,17 +277,17 @@
   <div class="section-tag">SECTION_01</div>
   <h2 class="section-title">ABOUT</h2>
   <div class="about-grid">
-    <div class="panel">
+    <div class="panel decode holo-border">
       <h3>> identity</h3>
-      <p>我是 NEO，一名 AIGC 领域的创作者与工程实践者。专注将生成式 AI 转化为可落地的工作流与产品形态。</p>
+      <p data-decode="我是 NEO，一名 AIGC 领域的创作者与工程实践者。专注将生成式 AI 转化为可落地的工作流与产品形态。">我是 NEO，一名 AIGC 领域的创作者与工程实践者。专注将生成式 AI 转化为可落地的工作流与产品形态。</p>
     </div>
-    <div class="panel">
+    <div class="panel decode holo-border">
       <h3>> education</h3>
-      <p>大学主修 AIGC / 生成式智能，系统学习模型原理、提示工程、多模态生成与创意技术。</p>
+      <p data-decode="大学主修 AIGC / 生成式智能，系统学习模型原理、提示工程、多模态生成与创意技术。">大学主修 AIGC / 生成式智能，系统学习模型原理、提示工程、多模态生成与创意技术。</p>
     </div>
-    <div class="panel">
+    <div class="panel decode holo-border">
       <h3>> focus</h3>
-      <p>工作流搭建、Skill 训练、Vibe Coding。偏好用系统化思维压缩“创意 → 可运行产物”的距离。</p>
+      <p data-decode="工作流搭建、Skill 训练、Vibe Coding。偏好用系统化思维压缩“创意 → 可运行产物”的距离。">工作流搭建、Skill 训练、Vibe Coding。偏好用系统化思维压缩“创意 → 可运行产物”的距离。</p>
     </div>
   </div>
 </section>
@@ -321,19 +359,19 @@
 <script>
 /* ========== 矩阵雨 ========== */
 (function(){
-  const c=document.getElementById('matrix'),ctx=c.getContext('2d');
-  let w,h,cols,drops;
-  const text='01ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ0123456789ABCDEF';
-  const fontSize=14;
+  var c=document.getElementById('matrix'),ctx=c.getContext('2d');
+  var w,h,cols,drops;
+  var text='01ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ0123456789ABCDEF';
+  var fontSize=14;
   function resize(){w=c.width=innerWidth;h=c.height=innerHeight;cols=Math.floor(w/fontSize);drops=Array(cols).fill(1)}
   addEventListener('resize',resize);resize();
   function draw(){
     ctx.fillStyle='rgba(5,5,8,.12)';ctx.fillRect(0,0,w,h);
     ctx.fillStyle='#00ff9c';ctx.font=fontSize+'px monospace';
-    for(let i=0;i<cols;i++){
-      const char=text[Math.floor(Math.random()*text.length)];
-      ctx.fillText(char,i*fontSize,drops[i]*fontSize);
-      if(drops[i]*fontSize>h&&Math.random()>.975)drops[i]=0;
+    for(var i=0;i<cols;i++){
+      var ch=text[Math.floor(Math.random()*text.length)];
+      ctx.fillText(ch,i*fontSize,drops[i]*fontSize);
+      if(drops[i]*fontSize>h && Math.random()>.975)drops[i]=0;
       drops[i]++;
     }
   }
@@ -342,16 +380,16 @@
 
 /* ========== 打字机 ========== */
 (function(){
-  const el=document.getElementById('typewriter');
-  const phrases=[
+  var el=document.getElementById('typewriter');
+  var phrases=[
     'AIGC Specialist // 生成式智能创作者',
     'Workflow Architect // 工作流搭建者',
     'Skill Trainer // Skill 训练工程师',
     'Vibe Coder // 氛围程序员'
   ];
-  let pIdx=0,cIdx=0,deleting=false;
+  var pIdx=0, cIdx=0, deleting=false;
   function type(){
-    const phrase=phrases[pIdx];
+    var phrase=phrases[pIdx];
     el.textContent=phrase.slice(0,cIdx);
     if(!deleting){cIdx++;if(cIdx>phrase.length){deleting=true;setTimeout(type,1800);return}}
     else{cIdx--;if(cIdx<0){deleting=false;pIdx=(pIdx+1)%phrases.length;setTimeout(type,400);return}}
@@ -361,19 +399,53 @@
 })();
 
 /* ========== 滚动显现 + 技能条 ========== */
-const io=new IntersectionObserver((entries)=>{
-  entries.forEach(entry=>{
+var io=new IntersectionObserver(function(entries){
+  entries.forEach(function(entry){
     if(!entry.isIntersecting)return;
     entry.target.classList.add('visible');
-    entry.target.querySelectorAll('.progress-fill').forEach(bar=>{bar.style.width=bar.dataset.width});
+    entry.target.querySelectorAll('.progress-fill').forEach(function(bar){bar.style.width=bar.dataset.width});
   });
 },{threshold:.15});
-document.querySelectorAll('section').forEach(s=>io.observe(s));
+document.querySelectorAll('section').forEach(function(s){io.observe(s)});
 
 /* ========== 导航阴影 ========== */
-addEventListener('scroll',()=>{
+addEventListener('scroll',function(){
   document.getElementById('navbar').classList.toggle('scrolled',scrollY>30);
 });
+
+/* ========== 科技感光标 ========== */
+(function(){
+  var dot=document.getElementById('cursorDot');
+  var ring=document.getElementById('cursorRing');
+  var mx=0,my=0,rx=0,ry=0;
+  addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;dot.style.transform='translate3d('+(mx-3)+'px,'+(my-3)+'px,0)'});
+  (function tick(){rx+=(mx-rx)*.18;ry+=(my-ry)*.18;ring.style.transform='translate3d('+(rx-14)+'px,'+(ry-14)+'px,0)';requestAnimationFrame(tick)})();
+  addEventListener('mouseleave',function(){dot.style.opacity=0;ring.style.opacity=0});
+  addEventListener('mouseenter',function(){dot.style.opacity=1;ring.style.opacity=1});
+})();
+
+/* ========== 解码文字揭示 ========== */
+(function(){
+  var pool='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*?><';
+  function chars(target){var s='';for(var i=0;i<target.length;i++)s+=target[i]===' '?' ':pool[Math.floor(Math.random()*pool.length)];return s};
+  var ob=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting)return;
+      en.target.classList.add('show');
+      var ps=en.target.querySelectorAll('[data-decode]');
+      ps.forEach(function(p){
+        var a=p,t=a.dataset.decode;var iter=0;
+        var timer=setInterval(function(){
+          a.textContent=chars(t).slice(0,iter+1).split('').map(function(x,i){return i<iter?t[i]:x}).join('');
+          iter+=.5;
+          if(iter>=t.length){a.textContent=t;clearInterval(timer)}
+        },40);
+      });
+      ob.unobserve(en.target);
+    });
+  },{threshold:.25});
+  document.querySelectorAll('.decode').forEach(function(el){ob.observe(el)};
+})();
 
 document.getElementById('year').textContent=new Date().getFullYear();
 </script>
